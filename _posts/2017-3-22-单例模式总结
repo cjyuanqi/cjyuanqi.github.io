@@ -1,0 +1,137 @@
+##### 懒汉式
+
+``` java
+public class Singleton {
+    
+    private static final Singleton instance = new Singleton();
+    
+    // 私有构造方法
+    private Singleton() {}
+    
+    // 获取单例对象
+    public static Singleton getInstance() {
+        return instance;
+    }
+    
+}
+```
+
+
+
+##### 饿汉式
+
+``` java
+public class Singleton {
+
+    private Singleton instance;
+
+    // 私有构造方法
+    private Singleton() {}
+
+    // 获取单例对象
+    public static Singleton getInstance() {
+      	// 此处容易出现线程安全问题
+        if (instance == null) { 
+            instance = new Singleton();
+        }
+        return instance;
+    }
+
+}
+
+```
+
+
+
+##### 饿汉式加锁解决线程安全问题
+
+``` java
+public class Singleton {
+
+    private static Singleton instance;
+
+    // 私有构造方法
+    private Singleton() {}
+
+    // 获取单例对象, 加锁解决线程安全问题， 但是影响执行效率
+    public static synchronized Singleton  getInstance() {
+        if (instance == null) {
+            instance = new Singleton();
+        }
+        return instance;
+    }
+
+}
+```
+
+##### 饿汉式加锁 双重判断， 保证线程安全，并提高效率
+
+```java
+public class Singleton {
+
+    private static Singleton instance;
+
+    // 私有构造方法
+    private Singleton() {}
+
+    // 获取单例对象
+    public static  Singleton  getInstance() {
+        if (instance == null) {  // 双重if判断
+            synchronized (Singleton.class) { // 只对核心代码加锁，减小加锁粒度， 提高执行效率
+                if (instance == null) {
+                    instance = new Singleton();
+                }
+            }
+        }
+
+        return instance;
+    }
+}
+```
+
+
+
+##### 静态内部类
+
+``` java
+public class Singleton {
+
+    private static Singleton instance;
+
+    // 私有构造方法
+    private Singleton() {}
+    
+  	// 加载外部类时，不会加载内部类， 是比较完美的一种方式
+    private static class SingletonHolder {
+        public static Singleton singleton = new Singleton();
+    }
+
+    // 获取单例对象
+    public static  Singleton  getInstance() {
+        instance = SingletonHolder.singleton;
+        return instance;
+    }
+
+}
+```
+
+
+
+##### effect Java 枚举单例
+
+``` java
+public enum SingletonEnum {
+    
+    INSTANCE;
+    
+    public void method() {
+        System.out.println("call singletonEnum method!");
+    }
+
+    public static void main(String[] args) {
+        // 调用单例方法
+        SingletonEnum.INSTANCE.method();
+    }
+}
+```
+
